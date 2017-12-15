@@ -13,6 +13,11 @@ from matplotlib.spines import Spine
 from matplotlib.projections.polar import PolarAxes
 from matplotlib.projections import register_projection
 
+FULL_CIRCE_DEG = 360
+
+def plot_radar_chart(data):
+    pass    
+
 def _unit_poly_verts(theta):
     """Return vertices of polygon for subplot axes.
 
@@ -72,7 +77,7 @@ def create_radar_chart(num_vars, frame='polygon', **kwargs):
         shape = frame
         draw_patch = patch_dict[frame]
 
-        def scale(self, top, bottom=0):
+        def scale(self, top, bottom=0, round_up=False):
             """Scale the radar chart
                 If circle chart then this function just sets the ylim of the polar ax.
                 If polygon chart then ylim will be set to fit a dircle with radius h
@@ -83,7 +88,9 @@ def create_radar_chart(num_vars, frame='polygon', **kwargs):
                 r = top
             elif self.shape == 'polygon':
                 angle_of_slice = 2 * np.pi / self.size
-                np.ceil(r = top / np.cos(angle_of_slice / 2))
+                r = top / np.cos(angle_of_slice / 2.)
+                if round_up:
+                    r = np.ceil(r)
             else:
                 # this should never happen since this is checked for in class
                 # creation
@@ -110,7 +117,8 @@ def create_radar_chart(num_vars, frame='polygon', **kwargs):
                 line.set_data(x, y)
 
         def set_varlabels(self, labels):
-            self.set_thetagrids(np.degrees(theta), labels)
+            """Label the radial axes"""
+            self.set_thetagrids(np.degrees(theta) % FULL_CIRCE_DEG, labels)
 
         def _gen_axes_patch(self):
             return self.draw_patch()
