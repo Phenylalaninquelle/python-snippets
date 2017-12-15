@@ -22,6 +22,15 @@ def _unit_poly_verts(theta):
     verts = [(r*np.cos(t) + x0, r*np.sin(t) + y0) for t in theta]
     return verts
 
+def _theta(num_vars):
+    """Return array of theta values.
+    Values are evenly spaced and corrected for radar plotting
+    """
+    theta = np.linspace(0, 2*np.pi, num_vars, endpoint=False)
+    # rotate theta such that the first axis is at the top
+    theta += np.pi/2
+    return theta
+
 def create_radar_chart(num_vars, frame='polygon', **kwargs):
     """Create a radar chart with `num_vars` axes.
 
@@ -36,10 +45,7 @@ def create_radar_chart(num_vars, frame='polygon', **kwargs):
         for others see: https://matplotlib.org/devdocs/api/_as_gen/matplotlib.pyplot.subplots.html
 
     """
-    # calculate evenly-spaced axis angles
-    theta = np.linspace(0, 2*np.pi, num_vars, endpoint=False)
-    # rotate theta such that the first axis is at the top
-    theta += np.pi/2
+    theta = _theta(num_vars)
 
     def draw_poly_patch(self):
         verts = _unit_poly_verts(theta)
@@ -59,10 +65,30 @@ def create_radar_chart(num_vars, frame='polygon', **kwargs):
         """
 
         name = 'radar'
+        size = num_vars
         # use 1 line segment to connect specified points
         RESOLUTION = 1
         # define draw_frame method
+        shape = frame
         draw_patch = patch_dict[frame]
+
+        def scale(self, top, bottom=0):
+            """Scale the radar chart
+                If circle chart then this function just sets the ylim of the polar ax.
+                If polygon chart then ylim will be set to fit a dircle with radius h
+                completely inside it (distance from center to midpoint of polygon 
+                edge will be h.
+            """
+            if self.shape == 'circle':
+                r = top
+            elif self.shape == 'polygon':
+                angle_of_slice = 2 * np.pi / self.size
+                np.ceil(r = top / np.cos(angle_of_slice / 2))
+            else:
+                # this should never happen since this is checked for in class
+                # creation
+                raise ValueError('unknown value for `frame`: %s' % self.shape)
+            self.set_ylim(bottom, r)
 
         def fill(self, *args, **kwargs):
             """Override fill so that line is closed by default"""
