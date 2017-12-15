@@ -15,7 +15,7 @@ from matplotlib.projections import register_projection
 
 FULL_CIRCLE_DEG = 360
 
-def plot_radar_chart(data, line_labels, var_labels, var_labels_frac, title='', **kwargs):
+def plot_radar_chart(data, line_labels, var_labels, title='', r_ticks=None, r_tick_labels=None, **kwargs):
     """Make a radar chart.
 
     Parameters
@@ -41,12 +41,14 @@ def plot_radar_chart(data, line_labels, var_labels, var_labels_frac, title='', *
 
     theta = _theta(d_cols)
     fig, ax = create_radar_chart(d_cols, **kwargs)
-    # mng = plt.get_current_fig_manager()
-    # mng.resize(*mng.window.maxsize())
     for i in range(d_rows):
         ax.plot(theta, data[i], label=line_labels[i])
-    ax.scale(np.max(data))
-    ax.set_varlabels(var_labels, var_labels_frac)
+    if r_ticks is not None:
+        ax.set_yticks(r_ticks)
+    if r_tick_labels is not None:
+        ax.set_yticklabels(r_tick_labels)
+    ax.scale(np.max(data), True)
+    ax.set_varlabels(var_labels)
     ax.legend()
     fig.suptitle(title)
 
@@ -111,6 +113,7 @@ def create_radar_chart(num_vars, frame='polygon', **kwargs):
         shape = frame
         draw_patch = patch_dict[frame]
 
+        #TODO: this needs a better fitting name
         def scale(self, top, bottom=0, round_up=False):
             """Scale the radar chart
                 If circle chart then this function just sets the ylim of the polar ax.
@@ -150,10 +153,9 @@ def create_radar_chart(num_vars, frame='polygon', **kwargs):
                 y = np.concatenate((y, [y[0]]))
                 line.set_data(x, y)
 
-        def set_varlabels(self, labels, frac=1.2):
+        def set_varlabels(self, labels):
             """Label the radial axes"""
-            print("Set frac to: %d" % frac)
-            self.set_thetagrids(np.degrees(theta) % FULL_CIRCLE_DEG, labels, frac=frac)
+            self.set_thetagrids(np.degrees(theta) % FULL_CIRCLE_DEG, labels)
 
         def _gen_axes_patch(self):
             return self.draw_patch()
