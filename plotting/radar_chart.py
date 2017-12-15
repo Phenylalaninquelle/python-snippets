@@ -13,10 +13,44 @@ from matplotlib.spines import Spine
 from matplotlib.projections.polar import PolarAxes
 from matplotlib.projections import register_projection
 
-FULL_CIRCE_DEG = 360
+FULL_CIRCLE_DEG = 360
 
-def plot_radar_chart(data):
-    pass    
+def plot_radar_chart(data, line_labels, var_labels, var_labels_frac, title='', **kwargs):
+    """Make a radar chart.
+
+    Parameters
+    ----------
+    data: sequence, one- or two-dimensional
+        Data to plot. Must be some sort of sequence that can be converted to a numpy array
+    line_labels: sequence, one-dimensional
+        Labels for the legend of the plot
+    var_labels: sequence, one-dimensional
+        Labels for the 'theta-axes'
+    kwargs: keyword arguments for create_radar_chart function
+    """
+
+    data = np.asarray(data)
+    if np.ndim(data) == 1:
+        d_rows = 1
+        d_cols = len(data)
+    elif np.ndim(data) == 2:
+        d_rows = data.shape[0]
+        d_cols = data.shape[1]
+    else:
+        raise ValueError("Incorrect dimensionality of data. Must be <= 2")
+
+    theta = _theta(d_cols)
+    fig, ax = create_radar_chart(d_cols, **kwargs)
+    # mng = plt.get_current_fig_manager()
+    # mng.resize(*mng.window.maxsize())
+    for i in range(d_rows):
+        ax.plot(theta, data[i], label=line_labels[i])
+    ax.scale(np.max(data))
+    ax.set_varlabels(var_labels, var_labels_frac)
+    ax.legend()
+    fig.suptitle(title)
+
+    return fig, ax
 
 def _unit_poly_verts(theta):
     """Return vertices of polygon for subplot axes.
@@ -116,9 +150,10 @@ def create_radar_chart(num_vars, frame='polygon', **kwargs):
                 y = np.concatenate((y, [y[0]]))
                 line.set_data(x, y)
 
-        def set_varlabels(self, labels):
+        def set_varlabels(self, labels, frac=1.2):
             """Label the radial axes"""
-            self.set_thetagrids(np.degrees(theta) % FULL_CIRCE_DEG, labels)
+            print("Set frac to: %d" % frac)
+            self.set_thetagrids(np.degrees(theta) % FULL_CIRCLE_DEG, labels, frac=frac)
 
         def _gen_axes_patch(self):
             return self.draw_patch()
