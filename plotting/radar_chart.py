@@ -15,8 +15,11 @@ from matplotlib.projections import register_projection
 
 FULL_CIRCLE_DEG = 360
 
-def plot_radar_chart(data, line_labels, var_labels, title='', r_ticks=None, r_tick_labels=None, **kwargs):
+def plot_radar_chart(data, line_labels, var_labels, **kwargs):
     """Make a radar chart.
+
+    Input data is assumed to differ in variables along the columns and differ in
+    observations/samples along the rows.
 
     Parameters
     ----------
@@ -26,9 +29,41 @@ def plot_radar_chart(data, line_labels, var_labels, title='', r_ticks=None, r_ti
         Labels for the legend of the plot
     var_labels: sequence, one-dimensional
         Labels for the 'theta-axes'
-    kwargs: keyword arguments for create_radar_chart function
+    kwargs: keyword arguments 
+        can be either:
+            `title` - string, title for the figure
+            `r_ticks` - sequence, positions for the radial ticks
+            `r_tick_labels` - sequence, labels for the radial ticks given by `r_ticks`
+        or keyword args accepted by create_radar_chart function
     """
+    # get kwargs that should not be passed on to create_radar_chart
+    title = kwargs.pop('title', '')
+    r_ticks = kwargs.pop('r_ticks', None)
+    r_tick_labels = kwargs.pop('r_tick_labels', None)
 
+    # validate input data
+    data, d_rows, d_cols = _handle_input_data(data)
+
+    # plot the thing
+    theta = _theta(d_cols)
+    fig, ax = create_radar_chart(d_cols, **kwargs)
+    for i in range(d_rows):
+        ax.plot(theta, data[i], label=line_labels[i])
+    if r_ticks is not None:
+        ax.set_yticks(r_ticks)
+    if r_tick_labels is not None:
+        ax.set_yticklabels(r_tick_labels)
+    ax.set_rscale(np.max(data), round_up=True)
+    ax.set_varlabels(var_labels)
+    ax.legend()
+    fig.suptitle(title)
+    plt.show()
+
+    return fig, ax
+
+
+def _handle_input_data(data):
+    """Helper function for input data validation and calculating helper values"""
     data = np.asarray(data)
     if np.ndim(data) == 1:
         d_rows = 1
@@ -38,21 +73,8 @@ def plot_radar_chart(data, line_labels, var_labels, title='', r_ticks=None, r_ti
         d_cols = data.shape[1]
     else:
         raise ValueError("Incorrect dimensionality of data. Must be <= 2")
+    return data, d_rows, d_cols
 
-    theta = _theta(d_cols)
-    fig, ax = create_radar_chart(d_cols, **kwargs)
-    for i in range(d_rows):
-        ax.plot(theta, data[i], label=line_labels[i])
-    if r_ticks is not None:
-        ax.set_yticks(r_ticks)
-    if r_tick_labels is not None:
-        ax.set_yticklabels(r_tick_labels)
-    ax.scale(np.max(data), True)
-    ax.set_varlabels(var_labels)
-    ax.legend()
-    fig.suptitle(title)
-
-    return fig, ax
 
 def _unit_poly_verts(theta):
     """Return vertices of polygon for subplot axes.
@@ -63,6 +85,7 @@ def _unit_poly_verts(theta):
     verts = [(r*np.cos(t) + x0, r*np.sin(t) + y0) for t in theta]
     return verts
 
+
 def _theta(num_vars):
     """Return array of theta values.
     Values are evenly spaced and corrected for radar plotting
@@ -71,6 +94,7 @@ def _theta(num_vars):
     # rotate theta such that the first axis is at the top
     theta += np.pi/2
     return theta
+
 
 def create_radar_chart(num_vars, frame='polygon', **kwargs):
     """Create a radar chart with `num_vars` axes.
@@ -113,8 +137,7 @@ def create_radar_chart(num_vars, frame='polygon', **kwargs):
         shape = frame
         draw_patch = patch_dict[frame]
 
-        #TODO: this needs a better fitting name
-        def scale(self, top, bottom=0, round_up=False):
+        def set_rscale(self, top, bottom=0, round_up=False):
             """Scale the radar chart
                 If circle chart then this function just sets the ylim of the polar ax.
                 If polygon chart then ylim will be set to fit a dircle with radius h
