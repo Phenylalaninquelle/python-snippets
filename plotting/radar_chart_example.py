@@ -20,9 +20,13 @@ def main():
     r_ticks = [1,2,3,4,5]
     r_tick_labels = [1,2,3,4]
 
-    plot_radar_chart(data, observations, vars, 
-                     title=title, r_ticks=r_ticks,
-                     r_tick_labels=r_tick_labels)
+    fig, ax = plot_radar_chart(data, observations, vars, 
+                               title=title, r_ticks=r_ticks,
+                               r_tick_labels=r_tick_labels)
+
+    # plot adjustments: if the theta labels overlap with the figure us this:
+    # pad_length = 20
+    # ax.tick_params(pad=pad_length)
 
 if __name__ == '__main__':
     main()
