@@ -5,3 +5,4 @@ Useful pieces of python code that are too small or too hackish to be part of act
 Useful plotting functions.
 
 - **[radar charts](plotting/radar_chart_example.py)** (aka spider plots)
+- **[semantic differential](plotting/sem_diff_example.py)** (aka profile plots)
