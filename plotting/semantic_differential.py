@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame
 
-def plot_sem_diff(data, x_labels, y_labels, colours, line_labels=None, title=''):
+def plot_sem_diff(data, x_labels, y_labels, colours=None, line_labels=None, title=''):
     """
     Plot the semantic differential of the values given by `data`
 
@@ -23,10 +23,8 @@ def plot_sem_diff(data, x_labels, y_labels, colours, line_labels=None, title='')
     title - title for the figure
     """
     data, d_rows, d_cols = _handle_input_data(data)
-    # TODO: handle the colours in a better way
-    if d_rows != len(colours):
-        raise ValueError("There must be a colour for every row in the DataFrame!")
 
+    # handle labels
     left_labels, right_labels = _get_labels(y_labels)
     if line_labels is None:
         do_legend = False
@@ -34,11 +32,19 @@ def plot_sem_diff(data, x_labels, y_labels, colours, line_labels=None, title='')
     else:
         do_legend = True
 
+    # handle the case where no colour sequence is given
+    if colours == None:
+        from matplotlib import colors
+        colours = list(colors.BASE_COLORS.keys())
+    elif d_rows != len(colours):
+            raise ValueError("Must give a colour for every row in data or non at all")
+    n_c = len(colours)
+
+    # do the actual plotting 
     fig = plt.figure()
     y = np.arange(d_cols)[::-1]
-
     for i in range(len(data)):
-        _do_plot(data[i], y, colour=colours[i], label=line_labels[i])
+        _do_plot(data[i], y, colour=colours[i % n_c], label=line_labels[i])
 
     plt.title(title)
     #TODO: this only works for the x labels being numbers
