@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame
 
-def plot_sem_diff(data, x_labels, y_labels, x_pad=0.2, x_offset=0, colours=None, line_labels=None, title=''):
+def plot_sem_diff(data, x_labels, y_labels, **kwargs):
     """
     Plot the semantic differential of the values given by `data`
 
@@ -18,14 +18,36 @@ def plot_sem_diff(data, x_labels, y_labels, x_pad=0.2, x_offset=0, colours=None,
         If given a one-dimensional sequence (i.e. a seq of labels), labels will 
         only appear at the right of the figure. If given a sequence of pairs, then
         both sides will be labeled with the paired labels facing each other
-    colours - sequence of colours to use when plotting the rows of the DataFrame
-    line_labels - sequence of strings to use as labels for the lines
-    title - title for the figure
+    kwargs: keyword arguments, can be:
+        x_pad - padding for the limits of the x-axis, default: 0.2
+                (space that is added left and right in the plot)
+        x_offset - offset value to position your lines, default: 0
+                   The function by default assumes that the scale you used for data
+                   collection starts at 0 (and goes up from there). If this is not
+                   the case (e.g. when your scale starts at 1), you can apply an offset
+                   to match your data values to your x_labels. Your offset has to be
+                   your scale's starting value (so in our example above it would be 1).
+        colours - sequence of colours to use when plotting the rows of the DataFrame,
+                  default: None
+                  If given `None` then the function will use the BASE_COLORS from matplotlib.colors
+                  and will circle through them if more than 7 (SEVEN!!) observations
+                  (i.e. rows in `data`) are given (this means that colours will repeat
+                  if more than sevenm rows are present).
+        line_labels - sequence of strings to use as labels in the legend, default: None
+                      If given `None`, no legend will be created
+        title - title for the figure, default: ''
     """
+    # handle kwargs
+    x_pad = kwargs.pop('x_pad', 0.2)
+    x_offset = kwargs.pop('x_offset', 0)
+    colours = kwargs.pop('colours', None)
+    line_labels = kwargs.pop('line_labels', None)
+    title = kwargs.pop('title', '')
     # set up things by helper functions
     data, d_rows, d_cols = _handle_input_data(data)
     left_labels, right_labels, line_labels, do_legend = _get_labels(y_labels,
-                                                                    line_labels)
+                                                                    line_labels,
+                                                                    d_rows)
     colours, n_c = _handle_colours(colours, d_rows)
 
     # do the actual plotting 
@@ -36,7 +58,7 @@ def plot_sem_diff(data, x_labels, y_labels, x_pad=0.2, x_offset=0, colours=None,
     plt.title(title)
 
     # set the x-axis labels 
-    x_lab_pos = np.arange(1, len(x_labels) + 1) + x_offset
+    x_lab_pos = np.arange(0, len(x_labels)) + x_offset
     plt.xticks(x_lab_pos, x_labels)
     plt.xlim(x_lab_pos[0] - x_pad, x_lab_pos[-1] + x_pad)
 
@@ -59,6 +81,8 @@ def plot_sem_diff(data, x_labels, y_labels, x_pad=0.2, x_offset=0, colours=None,
     if do_legend:
         plt.legend()
     plt.tight_layout()
+    
+    plt.show()
 
     return fig
 
@@ -68,6 +92,7 @@ def _handle_colours(colours, d_rows):
     if colours == None:
         from matplotlib import colors
         colours = colors.BASE_COLORS
+        print(colours)
         colours.pop('w')
         colours = list(colours.keys())
     elif d_rows != len(colours):
@@ -112,7 +137,7 @@ def _do_plot(data, y, colour, label):
         plt.plot(x_arr, y_arr, color=colour, linestyle='--', marker='x', label=label)
 
 
-def _get_labels(y_labels, line_labels):
+def _get_labels(y_labels, line_labels, d_rows):
     """
     Handle the given y-axis and line labels.
     """
