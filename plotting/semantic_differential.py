@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame
 
-def plot_sem_diff(data, x_labels, y_labels, colours, labels, title=''):
-    #TODO: make labels optional or something
+def plot_sem_diff(data, x_labels, y_labels, colours, line_labels=None, title=''):
     """
     Plot the semantic differential of the values given by `data`
 
@@ -20,7 +19,7 @@ def plot_sem_diff(data, x_labels, y_labels, colours, labels, title=''):
         only appear at the right of the figure. If given a sequence of pairs, then
         both sides will be labeled with the paired labels facing each other
     colours - sequence of colours to use when plotting the rows of the DataFrame
-    labels - sequence of strings to use as labels for the lines
+    line_labels - sequence of strings to use as labels for the lines
     title - title for the figure
     """
     data, d_rows, d_cols = _handle_input_data(data)
@@ -28,13 +27,18 @@ def plot_sem_diff(data, x_labels, y_labels, colours, labels, title=''):
     if d_rows != len(colours):
         raise ValueError("There must be a colour for every row in the DataFrame!")
 
-    left_labels, right_labels = _get_labels(y_labels) 
+    left_labels, right_labels = _get_labels(y_labels)
+    if line_labels is None:
+        do_legend = False
+        line_labels = [''] * d_rows
+    else:
+        do_legend = True
 
     fig = plt.figure()
     y = np.arange(d_cols)[::-1]
 
     for i in range(len(data)):
-        _do_plot(data[i], y, colour=colours[i], label=labels[i])
+        _do_plot(data[i], y, colour=colours[i], label=line_labels[i])
 
     plt.title(title)
     #TODO: this only works for the x labels being numbers
@@ -51,8 +55,8 @@ def plot_sem_diff(data, x_labels, y_labels, colours, labels, title=''):
         plt.yticks(y, right_labels)
         plt.sca(ax_l)
     plt.grid()
-    #TODO: adjustment needed, when labels become optional one day
-    plt.legend()
+    if do_legend:
+        plt.legend()
     plt.tight_layout()
 
     return fig
