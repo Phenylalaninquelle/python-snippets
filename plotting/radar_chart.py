@@ -68,6 +68,7 @@ def _handle_input_data(data):
     if np.ndim(data) == 1:
         d_rows = 1
         d_cols = len(data)
+        data = data.reshape((1, data.shape[0]))
     elif np.ndim(data) == 2:
         d_rows = data.shape[0]
         d_cols = data.shape[1]
