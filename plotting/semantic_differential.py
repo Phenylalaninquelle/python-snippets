@@ -4,7 +4,6 @@ Create a profile plot aka semantic differential
 
 import matplotlib.pyplot as plt
 import numpy as np
-from pandas import DataFrame
 
 def plot_sem_diff(data, x_labels, y_labels, **kwargs):
     """
@@ -27,7 +26,7 @@ def plot_sem_diff(data, x_labels, y_labels, **kwargs):
                    the case (e.g. when your scale starts at 1), you can apply an offset
                    to match your data values to your x_labels. Your offset has to be
                    your scale's starting value (so in our example above it would be 1).
-        colours - sequence of colours to use when plotting the rows of the DataFrame,
+        colours - sequence of colours to use when plotting the rows of the data,
                   default: None
                   If given `None` then the function will use the BASE_COLORS from matplotlib.colors
                   and will circle through them if more than 7 (SEVEN!!) observations
