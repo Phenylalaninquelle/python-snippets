@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame
 
-def plot_sem_diff(data, x_labels, y_labels, colours=None, line_labels=None, title=''):
+def plot_sem_diff(data, x_labels, y_labels, x_pad=0.2, x_offset=0, colours=None, line_labels=None, title=''):
     """
     Plot the semantic differential of the values given by `data`
 
@@ -22,34 +22,27 @@ def plot_sem_diff(data, x_labels, y_labels, colours=None, line_labels=None, titl
     line_labels - sequence of strings to use as labels for the lines
     title - title for the figure
     """
+    # set up things by helper functions
     data, d_rows, d_cols = _handle_input_data(data)
-
-    # handle labels
-    left_labels, right_labels = _get_labels(y_labels)
-    if line_labels is None:
-        do_legend = False
-        line_labels = [''] * d_rows
-    else:
-        do_legend = True
-
-    # handle the case where no colour sequence is given
-    if colours == None:
-        from matplotlib import colors
-        colours = list(colors.BASE_COLORS.keys())
-    elif d_rows != len(colours):
-            raise ValueError("Must give a colour for every row in data or non at all")
-    n_c = len(colours)
+    left_labels, right_labels, line_labels, do_legend = _get_labels(y_labels,
+                                                                    line_labels)
+    colours, n_c = _handle_colours(colours, d_rows)
 
     # do the actual plotting 
     fig = plt.figure()
     y = np.arange(d_cols)[::-1]
     for i in range(len(data)):
         _do_plot(data[i], y, colour=colours[i % n_c], label=line_labels[i])
-
     plt.title(title)
-    #TODO: this only works for the x labels being numbers
-    plt.xticks(x_labels, x_labels)
-    plt.xlim(x_labels[0] - 0.2, x_labels[-1] + 0.2)
+
+    # set the x-axis labels 
+    x_lab_pos = np.arange(1, len(x_labels) + 1) + x_offset
+    plt.xticks(x_lab_pos, x_labels)
+    plt.xlim(x_lab_pos[0] - x_pad, x_lab_pos[-1] + x_pad)
+
+    # set y-axis labels on the right side of the plot (since this is the direction in
+    # which the respective attribute grows) or (if two sets of labels are given)
+    # on both sides
     if left_labels is None:
         plt.tick_params(labelleft=False, labelright=True)
         plt.yticks(y, right_labels)
@@ -60,12 +53,28 @@ def plot_sem_diff(data, x_labels, y_labels, colours=None, line_labels=None, titl
         ax_r.set_ylim(ax_l.get_ylim())
         plt.yticks(y, right_labels)
         plt.sca(ax_l)
+
+    # set grid and legend if necessary
     plt.grid()
     if do_legend:
         plt.legend()
     plt.tight_layout()
 
     return fig
+
+
+def _handle_colours(colours, d_rows):
+    """Handle the case where no colours are given"""
+    if colours == None:
+        from matplotlib import colors
+        colours = colors.BASE_COLORS
+        colours.pop('w')
+        colours = list(colours.keys())
+    elif d_rows != len(colours):
+            raise ValueError("Must give a colour for every row in data or non at all")
+    n_c = len(colours)
+    return colours, n_c
+
 
 def _handle_input_data(data):
     """Helper function for input data validation and calculating helper values"""
@@ -80,6 +89,7 @@ def _handle_input_data(data):
     else:
         raise ValueError("Incorrect dimensionality of data. Must be <= 2")
     return data, d_rows, d_cols
+
 
 def _do_plot(data, y, colour, label):
     """
@@ -101,9 +111,10 @@ def _do_plot(data, y, colour, label):
     for x_arr, y_arr in zip(x, y):
         plt.plot(x_arr, y_arr, color=colour, linestyle='--', marker='x', label=label)
 
-def _get_labels(y_labels):
+
+def _get_labels(y_labels, line_labels):
     """
-    Handle the given y-axis labels.
+    Handle the given y-axis and line labels.
     """
     y_labels = np.asarray(y_labels)
     dim = y_labels.ndim
@@ -125,7 +136,14 @@ def _get_labels(y_labels):
             raise ValueError("y_labels given in incorrect shape")
         left_labels = y_labels.T[0]
         right_labels = y_labels.T[1]
-    return left_labels, right_labels
+
+    if line_labels is None:
+        do_legend = False
+        line_labels = [''] * d_rows
+    else:
+        do_legend = True
+
+    return left_labels, right_labels, line_labels, do_legend
 
 
 def _split_by_nan(x, y):
