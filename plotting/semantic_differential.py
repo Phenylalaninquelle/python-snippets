@@ -79,7 +79,9 @@ def plot_sem_diff(data, x_labels, y_labels, **kwargs):
     plt.grid()
     if do_legend:
         plt.legend()
-    plt.tight_layout()
+    # this is to avoid errors when y_labels are very long and the figure is
+    # small ('left cannot be >= right')
+    #plt.tight_layout()
     
     plt.show()
 
@@ -103,7 +105,7 @@ def _handle_colours(colours, d_rows):
 def _handle_input_data(data):
     """Helper function for input data validation and calculating helper values"""
     data = np.asarray(data)
-    if np.ndim(data) == 0:
+    if np.ndim(data) == 1:
         d_rows = 1
         d_cols = len(data)
         data = data.reshape((1, data.shape[0]))

@@ -15,6 +15,8 @@ def main():
     # here we want labels on both sides of the plot (like a proper differential)
     left = ['small', 'quiet', 'weak', 'dark', 'bad']
     right = ['big', 'loud', 'strong', 'bright', 'good']
+    # careful: the conversion to list is necessary since zip objects
+    # wont get properly converted to numpy arrays
     y_labels = list(zip(left, right))
     title = 'This is the title'
     # labels of the different lines for the legend
