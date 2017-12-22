@@ -34,12 +34,14 @@ def plot_radar_chart(data, line_labels, var_labels, **kwargs):
             `title` - string, title for the figure
             `r_ticks` - sequence, positions for the radial ticks
             `r_tick_labels` - sequence, labels for the radial ticks given by `r_ticks`
+            `colours` - sequence with matplotlib colours for the lines
         or keyword args accepted by create_radar_chart function
     """
     # get kwargs that should not be passed on to create_radar_chart
     title = kwargs.pop('title', '')
     r_ticks = kwargs.pop('r_ticks', None)
     r_tick_labels = kwargs.pop('r_tick_labels', None)
+    colours = kwargs.pop('colours', None)
 
     # validate input data
     data, d_rows, d_cols = _handle_input_data(data)
@@ -48,7 +50,10 @@ def plot_radar_chart(data, line_labels, var_labels, **kwargs):
     theta = _theta(d_cols)
     fig, ax = create_radar_chart(d_cols, **kwargs)
     for i in range(d_rows):
-        ax.plot(theta, data[i], label=line_labels[i])
+        if colours is None:
+            ax.plot(theta, data[i], label=line_labels[i])
+        else:
+            ax.plot(theta, data[i], label=line_labels[i], color=colours[i])
     if r_ticks is not None:
         ax.set_yticks(r_ticks)
     if r_tick_labels is not None:
