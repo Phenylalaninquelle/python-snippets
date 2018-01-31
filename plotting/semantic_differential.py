@@ -35,6 +35,9 @@ def plot_sem_diff(data, x_labels, y_labels, **kwargs):
         line_labels - sequence of strings to use as labels in the legend, default: None
                       If given `None`, no legend will be created
         title - title for the figure, default: ''
+
+    returns:
+        the figure used for the plotting
     """
     # handle kwargs
     x_pad = kwargs.pop('x_pad', 0.2)
@@ -79,10 +82,7 @@ def plot_sem_diff(data, x_labels, y_labels, **kwargs):
     plt.grid()
     if do_legend:
         plt.legend()
-    # this is to avoid errors when y_labels are very long and the figure is
-    # small ('left cannot be >= right')
-    #plt.tight_layout()
-    
+
     plt.show()
 
     return fig
@@ -93,7 +93,6 @@ def _handle_colours(colours, d_rows):
     if colours == None:
         from matplotlib import colors
         colours = colors.BASE_COLORS
-        print(colours)
         colours.pop('w')
         colours = list(colours.keys())
     elif d_rows != len(colours):

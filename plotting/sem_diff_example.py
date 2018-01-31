@@ -9,8 +9,9 @@ import numpy as np
 from semantic_differential import plot_sem_diff
 
 def main():
-    # random sampled data
-    data = np.random.randint(1,5, (4,5))
+    # randomly sampled data
+    data = np.random.randint(1,5, (4,5)).astype('float')
+    data[2,3] = np.nan
     # the differentials in our fake data
     # here we want labels on both sides of the plot (like a proper differential)
     left = ['small', 'quiet', 'weak', 'dark', 'bad']
@@ -26,7 +27,7 @@ def main():
     x_offset = 1
 
     # only small padding left and right of the lines
-    x_pad=0.1
+    x_pad = 0.1
 
     fig = plot_sem_diff(data, x_labels, y_labels, x_pad=x_pad, x_offset=x_offset,
                         line_labels=observations, title=title)
