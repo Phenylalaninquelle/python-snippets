@@ -93,7 +93,8 @@ def _handle_colours(colours, d_rows):
     if colours == None:
         from matplotlib import colors
         colours = colors.BASE_COLORS
-        colours.pop('w')
+        # default value to enable reuse in one session
+        colours.pop('w', None)
         colours = list(colours.keys())
     elif d_rows != len(colours):
             raise ValueError("Must give a colour for every row in data or non at all")
