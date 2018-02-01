@@ -35,6 +35,8 @@ def plot_sem_diff(data, x_labels, y_labels, **kwargs):
         line_labels - sequence of strings to use as labels in the legend, default: None
                       If given `None`, no legend will be created
         title - title for the figure, default: ''
+        jitter_amount - value used for jittering the lines, can help to better 
+                        seperate the lines visually, default: 0
 
     returns:
         the figure used for the plotting
@@ -45,8 +47,9 @@ def plot_sem_diff(data, x_labels, y_labels, **kwargs):
     colours = kwargs.pop('colours', None)
     line_labels = kwargs.pop('line_labels', None)
     title = kwargs.pop('title', '')
+    jitter_amount = kwargs.pop('jitter_amount', 0)
     # set up things by helper functions
-    data, d_rows, d_cols = _handle_input_data(data)
+    data, d_rows, d_cols = _handle_input_data(data, jitter_amount)
     left_labels, right_labels, line_labels, do_legend = _get_labels(y_labels,
                                                                     line_labels,
                                                                     d_rows)
@@ -102,9 +105,9 @@ def _handle_colours(colours, d_rows):
     return colours, n_c
 
 
-def _handle_input_data(data):
+def _handle_input_data(data, jitter_amount):
     """Helper function for input data validation and calculating helper values"""
-    data = np.asarray(data)
+    data = np.asarray(data).astype('float')
     if np.ndim(data) == 1:
         d_rows = 1
         d_cols = len(data)
@@ -114,7 +117,16 @@ def _handle_input_data(data):
         d_cols = data.shape[1]
     else:
         raise ValueError("Incorrect dimensionality of data. Must be <= 2")
+    if jitter_amount:
+        data = _jitter_data(data, d_rows, jitter_amount)
     return data, d_rows, d_cols
+
+
+def _jitter_data(data, d_rows, amount):
+    i_max = d_rows/2
+    for i in range(int(-np.floor(i_max)), int(np.ceil(i_max))):
+        data[i] += i * amount
+    return data
 
 
 def _do_plot(data, y, colour, label):

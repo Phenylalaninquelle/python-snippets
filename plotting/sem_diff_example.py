@@ -10,8 +10,8 @@ from semantic_differential import plot_sem_diff
 
 def main():
     # randomly sampled data
-    data = np.random.randint(1,5, (4,5)).astype('float')
-    data[2,3] = np.nan
+    data = np.random.randint(1,5, (4,5))
+    #data[2,3] = np.nan
     # the differentials in our fake data
     # here we want labels on both sides of the plot (like a proper differential)
     left = ['small', 'quiet', 'weak', 'dark', 'bad']
@@ -31,6 +31,12 @@ def main():
 
     fig = plot_sem_diff(data, x_labels, y_labels, x_pad=x_pad, x_offset=x_offset,
                         line_labels=observations, title=title)
+
+    # make another plot with identical data for each observation to show jittering
+    data2 = 3 * np.ones((4,5))
+    data2[:, 0] = np.asarray([1,2,3,4])
+    fig = plot_sem_diff(data2, x_labels, y_labels, x_pad=x_pad, x_offset=x_offset,
+                        line_labels=observations, title=title, jitter_amount=.01)
 
 if __name__ == '__main__':
     main()
