@@ -135,6 +135,9 @@ def _do_plot(data, y, colour, label):
 
     for x_arr, y_arr in zip(x, y):
         plt.plot(x_arr, y_arr, color=colour, linestyle='--', marker='x', label=label)
+        # this assures that when doing multiple plots because of an omitted nan
+        # value the label of the plot only appears once in the legend
+        label = None
 
 
 def _get_labels(y_labels, line_labels, d_rows):
