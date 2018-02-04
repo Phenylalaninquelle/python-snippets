@@ -123,9 +123,11 @@ def _handle_input_data(data, jitter_amount):
 
 
 def _jitter_data(data, d_rows, amount):
+    """Add jitter to the data to separate the lines by `amount`"""
     i_max = d_rows/2
+    shift = 0 if d_rows % 2 else amount/2
     for i in range(int(-np.floor(i_max)), int(np.ceil(i_max))):
-        data[i] += i * amount
+        data[i] += i * amount + shift
     return data
 
 
