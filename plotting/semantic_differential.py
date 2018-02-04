@@ -36,7 +36,8 @@ def plot_sem_diff(data, x_labels, y_labels, **kwargs):
                       If given `None`, no legend will be created
         title - title for the figure, default: ''
         jitter_amount - value used for jittering the lines, can help to better 
-                        seperate the lines visually, default: 0
+                        seperate the lines visually if their values are similar,
+                        only makes sense for integer scales, default: 0
 
     returns:
         the figure used for the plotting
