@@ -5,6 +5,7 @@ Create a profile plot aka semantic differential
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 def plot_sem_diff(data, x_labels, y_labels, **kwargs):
     """
     Plot the semantic differential of the values given by `data`
@@ -14,7 +15,7 @@ def plot_sem_diff(data, x_labels, y_labels, **kwargs):
         with the different observations in the rows and the attributes in the columns
     x_labels - labels for the values on the x axis
     y_labels - sequence of labels for the y axes
-        If given a one-dimensional sequence (i.e. a seq of labels), labels will 
+        If given a one-dimensional sequence (i.e. a seq of labels), labels will
         only appear at the right of the figure. If given a sequence of pairs, then
         both sides will be labeled with the paired labels facing each other
     kwargs: keyword arguments, can be:
@@ -35,7 +36,7 @@ def plot_sem_diff(data, x_labels, y_labels, **kwargs):
         line_labels - sequence of strings to use as labels in the legend, default: None
                       If given `None`, no legend will be created
         title - title for the figure, default: ''
-        jitter_amount - value used for jittering the lines, can help to better 
+        jitter_amount - value used for jittering the lines, can help to better
                         seperate the lines visually if their values are similar,
                         only makes sense for integer scales, default: 0
 
@@ -56,14 +57,14 @@ def plot_sem_diff(data, x_labels, y_labels, **kwargs):
                                                                     d_rows)
     colours, n_c = _handle_colours(colours, d_rows)
 
-    # do the actual plotting 
+    # do the actual plotting
     fig = plt.figure()
     y = np.arange(d_cols)[::-1]
     for i in range(len(data)):
         _do_plot(data[i], y, colour=colours[i % n_c], label=line_labels[i])
     plt.title(title)
 
-    # set the x-axis labels 
+    # set the x-axis labels
     x_lab_pos = np.arange(0, len(x_labels)) + x_offset
     plt.xticks(x_lab_pos, x_labels)
     plt.xlim(x_lab_pos[0] - x_pad, x_lab_pos[-1] + x_pad)
@@ -94,14 +95,14 @@ def plot_sem_diff(data, x_labels, y_labels, **kwargs):
 
 def _handle_colours(colours, d_rows):
     """Handle the case where no colours are given"""
-    if colours == None:
+    if colours is None:
         from matplotlib import colors
         colours = colors.BASE_COLORS
         # default value to enable reuse in one session
         colours.pop('w', None)
         colours = list(colours.keys())
     elif d_rows != len(colours):
-            raise ValueError("Must give a colour for every row in data or non at all")
+        raise ValueError("Must give a colour for every row in data or non at all")
     n_c = len(colours)
     return colours, n_c
 
@@ -202,7 +203,6 @@ def _split_by_nan(x, y):
     nan_pos = np.where(np.isnan(x))[0]
     if len(nan_pos) == 0:
         return [x], [y]
-   
     # split the arrays by nan values in it and then collects the subarrays
     # in a list without the nan value or the corresponding y value respectively
     x_ret = [a if i==0 else a[1:] for i, a in enumerate(np.split(x, nan_pos))]

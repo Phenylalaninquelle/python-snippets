@@ -29,7 +29,7 @@ def plot_radar_chart(data, line_labels, var_labels, **kwargs):
         Labels for the legend of the plot
     var_labels: sequence, one-dimensional
         Labels for the 'theta-axes'
-    kwargs: keyword arguments 
+    kwargs: keyword arguments
         can be either:
             `title` - string, title for the figure
             `r_ticks` - sequence, positions for the radial ticks
@@ -146,7 +146,7 @@ def create_radar_chart(num_vars, frame='polygon', **kwargs):
         def set_rscale(self, top, bottom=0, round_up=False):
             """Scale the radar chart
                 If circle chart then this function just sets the ylim of the polar ax.
-                If polygon chart then ylim will be set to fit a dircle with radius h
+                If polygon chart then ylim will be set to fit a circle with radius h
                 completely inside it (distance from center to midpoint of polygon 
                 edge will be h.
             """
