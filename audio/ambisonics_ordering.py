@@ -2,9 +2,9 @@ import itertools
 from collections import OrderedDict
 
 
-FUMA = OrderedDict(enumerate(['w', 
-                              'x', 'y', 'z', 
-                              'r', 's', 't', 'u', 'v', 
+FUMA = OrderedDict(enumerate(['w',
+                              'x', 'y', 'z',
+                              'r', 's', 't', 'u', 'v',
                               'k', 'l', 'm', 'n', 'o', 'p', 'q']))
 ACN = OrderedDict(enumerate(['w',
                              'y', 'z', 'x',
@@ -12,11 +12,13 @@ ACN = OrderedDict(enumerate(['w',
                             'q', 'o', 'm', 'k', 'l', 'n', 'p']))
 ORDERINGS = {'fuma': FUMA, 'acn': ACN}
 
+
 def _channel_count_from_order(order, three_dim=True):
     """
     Helper function that computes the number of channels for a given ambisonics order.
     """
-    return (order + 1)**2 if three_dim else (2 * l + 1)
+    return (order + 1)**2 if three_dim else (2 * order + 1)
+
 
 def reorder_channels(signal_array, order, input_ordering, output_ordering):
     """
@@ -29,8 +31,8 @@ def reorder_channels(signal_array, order, input_ordering, output_ordering):
     """
     channel_count = _channel_count_from_order(order)
     assert(signal_array.shape[1] == channel_count)
-    input_ordering = OrderedDict(itertools.islice(orderings[input_ordering].items(), channel_count))
-    output_ordering = OrderedDict(itertools.islice(orderings[output_ordering].items(), channel_count))
+    input_ordering = OrderedDict(itertools.islice(ORDERINGS[input_ordering].items(), channel_count))
+    output_ordering = OrderedDict(itertools.islice(ORDERINGS[output_ordering].items(), channel_count))
     input_ordering = {v: k for k, v in input_ordering.items()}
     new_order = [input_ordering[output_ordering[i]] for i in output_ordering.keys()]
 

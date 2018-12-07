@@ -1,5 +1,5 @@
 """
-Helper functions to solve common problems/tasks when 
+Helper functions to solve common problems/tasks when
 messing with audio files
 """
 
@@ -12,7 +12,7 @@ def extract_channels_from_wav(filename, channels, write_file=None):
     s, fs = sf.read(filename)
     if type(channels) == int:
         channels = [channels]
-    s = s[: ,channels]
+    s = s[:, channels]
     if write_file is not None:
         sf.write(write_file, s, fs)
     return s
@@ -20,6 +20,7 @@ def extract_channels_from_wav(filename, channels, write_file=None):
 
 def monofiles_to_multitrack(monofiles, new_filename):
     """Read mono wav files and combine them into a multitrack wavfile"""
+    # TODO: this causes MemoryError when signals are very long
     signals = []
     for f in monofiles:
         s, fs = sf.read(f)
