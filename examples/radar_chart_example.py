@@ -6,7 +6,8 @@ Example usage of plot_radar_chart function
 """
 
 import numpy as np
-from radar_chart import plot_radar_chart
+
+from pysnips.plotting import plot_radar_chart
 
 
 def main():

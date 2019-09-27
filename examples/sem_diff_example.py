@@ -6,7 +6,8 @@ Example usage of plot_sem_diff function
 """
 
 import numpy as np
-from semantic_differential import plot_sem_diff
+
+from pysnips.plotting import plot_sem_diff
 
 
 def main():
