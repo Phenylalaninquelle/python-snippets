@@ -1,8 +1,12 @@
 # python-snippets
-Small snippets of python code from past projects that could be useful in the future.
+Small snippets of python code from past projects that could be useful in the future. 
 
-### plotting
-Useful plotting functions.
+Functionalities with high potential for reusability are collected in a package called `pysnips`. Install it locally with `pip install .` in your favourite virtual env. Code that is less suited for packaging or just too hackish (or not yet sorted) resides in `scripts`. 
 
-- **[radar charts](plotting/radar_chart_example.py)** (aka spider plots)
-- **[semantic differential](plotting/sem_diff_example.py)** (aka profile plots)
+Example usage of the package functions can be found in `examples`.
+
+Contents of `pysnips` for now include:
+
+- `pysnips.plotting`
+	- **[radar charts](examples/radar_chart_example.py)** (aka spider plots)
+	- **[semantic differential](examples/sem_diff_example.py)** (aka profile plots)
