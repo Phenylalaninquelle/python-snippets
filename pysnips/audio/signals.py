@@ -4,6 +4,8 @@ Module for generating commonly used signals for testing or stuff.
 
 import numpy as np
 
+__all__ = ['white_noise']
+
 
 def white_noise(length_seconds, fs, amp, db=True):
     """

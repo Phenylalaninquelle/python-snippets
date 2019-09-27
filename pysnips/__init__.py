@@ -1,4 +1,5 @@
-from . import plotting
+from . import plotting, audio
 
 name = 'pysnips'
-__all__ = ['plotting']
+__all__ = ['plotting',
+           'audio']
